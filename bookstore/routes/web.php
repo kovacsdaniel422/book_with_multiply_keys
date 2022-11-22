@@ -3,6 +3,7 @@
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\CopyController;
 use App\Http\Controllers\LendingController;
+use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -51,7 +52,14 @@ Route::middleware(['auth.basic'])->group(function () {
     //queries
     //user lendings
     Route::get('/api/user_lendings', [LendingController::class, 'userLendingsList']);
+    Route::get('api/more_lendings/{db}', [CopyController::class, 'more_lendings']);
     Route::get('/api/user_lendings_count', [LendingController::class, 'userLendingsCount']);
+    Route::get('/api/lengthen/{date}', [ReservationController::class, 'difference']);
+    //Route::get('/api/lengthen/{copy}/{start}', [LendingController::class, 'lengthen']);
+    Route::patch('/api/lengthen/{copy}/{start}', [LendingController::class, 'lengthen']);
+    Route::get('api/reserved/{id}', [LendingController::class, 'reserved']);
+    //reservations
+    Route::get('/api/older/{day}', [ReservationController::class, 'older']);
 });
 //csak a tesztelés miatt van "kint"
 Route::patch('/api/users/password/{id}', [UserController::class, 'updatePassword']);
@@ -62,5 +70,6 @@ Route::put('/api/lendings/{user_id}/{copy_id}/{start}', [LendingController::clas
 Route::patch('/api/lendings/{user_id}/{copy_id}/{start}', [LendingController::class, 'update']);
 Route::post('/api/lendings', [LendingController::class, 'store']);
 Route::delete('/api/lendings/{user_id}/{copy_id}/{start}', [LendingController::class, 'destroy']);
+Route::get('/api/books_with_r', [ReservationController::class,'booksWithR']);
 
 require __DIR__.'/auth.php';

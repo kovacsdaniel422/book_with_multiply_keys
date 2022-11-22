@@ -21,7 +21,7 @@ return new class extends Migration
             //kemény: 1 vagy puha kötésű: 0; tinyInteger ugyanaz
             $table->boolean('hardcovered')->default(0);
             $table->year('publication')->default(2000);
-            //alapból a könyvtárban (0), ki van adva: 1, selejtre ítélve: 2
+            //alapból a könyvtárban (0), ki van adva: 1, selejtre ítélve: 2, félre téve: 3
             $table->integer('status')->default(0);
             $table->timestamps();
         });

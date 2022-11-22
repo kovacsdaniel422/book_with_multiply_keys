@@ -4,37 +4,31 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Copy;
-use App\Models\User;
-//use App\Models\Traits\HasCompositeKeys;
 
-class Lending extends Model
+class Reservation extends Model
 {
     use HasFactory;
 
     protected function setKeysForSaveQuery($query)
     {
         $query
+            ->where('book_id', '=', $this->getAttribute('book_id'))
             ->where('user_id', '=', $this->getAttribute('user_id'))
-            ->where('copy_id', '=', $this->getAttribute('copy_id'))
             ->where('start', '=', $this->getAttribute('start')); 
 
         return $query;
     } 
 
     protected $fillable = [
+        'book_id',
         'user_id',
-        'copy_id',
         'start',
-        'end',
-        'extension',
-        'notice'
+        'message'
     ];
 
-    public function copy_c()
-    {    return $this->hasOne(Copy::class, 'copy_id', 'copy_id');   }
+    public function book_c()
+    {    return $this->hasOne(Copy::class, 'book_id', 'book_id');   }
 
     public function user_c()
     {    return $this->hasOne(User::class, 'id', 'user_id');   }
-
 }

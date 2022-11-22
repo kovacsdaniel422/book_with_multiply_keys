@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Book;
 
 class Copy extends Model
 {
@@ -18,6 +19,9 @@ class Copy extends Model
         'status'
     ];
 
+    public function book_c()
+    {    return $this->hasOne(Book::class, 'book_id', 'book_id');   }
+
     public function lending_c()
-    {    return $this->hasMany(Copy::class, 'copy_id', 'copy_id');   }
+    {    return $this->hasMany(User::class, 'copy_id', 'copy_id');   }
 }

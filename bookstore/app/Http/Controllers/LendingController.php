@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Copy;
 use App\Models\Lending;
+use App\Models\Reservation;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class LendingController extends Controller
 {
@@ -32,6 +34,9 @@ class LendingController extends Controller
         $lending->user_id = $request->user_id;
         $lending->copy_id = $request->copy_id;
         $lending->start = $request->start;
+        $lending->end = $request->end;
+        $lending->extension = $request->extension;
+        $lending->notice = $request->notice;
         $lending->save();
     }
 
@@ -41,6 +46,9 @@ class LendingController extends Controller
         $lending->user_id = $request->user_id;
         $lending->copy_id = $request->copy_id;
         $lending->start = $request->start;
+        $lending->end = $request->end;
+        $lending->extension = $request->extension;
+        $lending->notice = $request->notice;
         $lending->save();
     }
 
@@ -56,6 +64,38 @@ class LendingController extends Controller
         $user = Auth::user();	//bejelentkezett felhasználó
         $lendings = Lending::with('user_c')->where('user_id','=', $user->id)->distinct('copy_id')->count();
         return $lendings;
+    }
+
+    public function lengthen($copy_id, $start)
+    {
+        //könyv meghosszabbítása
+        $user = Auth::user();
+        //könyv lekérdezése
+        $book = DB::table('lendings as l')
+        ->select('c.book_id')
+        ->join('copies as c' ,'l.copy_id','=','c.copy_id') //kapcsolat leírása, akár több join is lehet
+        ->where('l.user_id', $user->id) 	//esetleges szűrés
+        ->where('l.copy_id', $copy_id)
+        ->where('l.start', $start)
+        ->get()
+        ->value('book_id');
+
+        //return $book;
+        
+        $lending = LendingController::show($user->id, $copy_id, $start);
+        //ha nincs rá előjegyzés: count... 
+        $recordNumbers = LendingController::reserved($book);
+        if ($recordNumbers == 0)
+            {//meghosszabbítja
+                $lending->extension = 1;
+                $lending->save();
+            }
+    }
+
+    public function reserved($book_id)
+    {
+        //hány db foglalás van az adott könyvre - nem példányra, amin nincs értesítés
+        return DB::table('reservations as r')->where('r.message', 0)->where('r.book_id', $book_id)->count();
     }
 
     //view-k:
